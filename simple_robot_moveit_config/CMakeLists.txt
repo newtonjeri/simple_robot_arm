@@ -6,7 +6,6 @@ find_package(rclcpp REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(moveit_msgs REQUIRED)
 
-
 add_executable(move_arm_node src/move_arm.cpp)
 
 ament_target_dependencies(move_arm_node moveit_ros_planning_interface moveit_msgs rclcpp)
@@ -17,6 +16,8 @@ target_compile_features(move_arm_node PUBLIC c_std_99 cxx_std_17)  # Require C99
 
 install(TARGETS move_arm_node
   DESTINATION lib/${PROJECT_NAME})
+
+ament_package()
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}
   PATTERN "setup_assistant.launch" EXCLUDE)
