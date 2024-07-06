@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="simple_robot">
+
+    <xacro:macro name="cylindrical_link" params="name length radius mass color">
+        <link name="${name}">
+            <visual>
+                <origin xyz="0 0 ${length / 2}" rpy="0 0 0"/>
+                <geometry>
+                    <cylinder length="${length}" radius="${radius}"/>
+                </geometry>
+                <material name="${color}">
+                    <color rgba="${color} 1.0"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0 0 ${length / 2}" rpy="0 0 0"/>
+                <geometry>
+                    <cylinder length="${length}" radius="${radius}"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <origin xyz="0 0 ${length / 2}" rpy="0 0 0"/>
+                <mass value="${mass}"/>
+                <inertia ixx="${mass * (3 * radius ** 2 + length ** 2) / 12}" 
+                         ixy="0.0" 
+                         ixz="0.0" 
+                         iyy="${mass * (3 * radius ** 2 + length ** 2) / 12}" 
+                         iyz="0.0" 
+                         izz="${mass * radius ** 2 / 2}"/>
+            </inertial>
+        </link>
+    </xacro:macro>
+
+    <xacro:macro name="revolute_joint" params="name parent child axis xyz rpy lower upper effort velocity">
+        <joint name="${name}" type="revolute">
+            <origin xyz="${xyz}" rpy="${rpy}"/>
+            <parent link="${parent}"/>
+            <child link="${child}"/>
+            <axis xyz="${axis}"/>
+            <limit lower="${lower}" upper="${upper}" effort="${effort}" velocity="${velocity}"/>
+        </joint>
+    </xacro:macro>
+
+    <xacro:property name="link_length" value="0.5"/>
+    <xacro:property name="link_radius" value="0.05"/>
+    <xacro:property name="link_mass" value="1.0"/>
+    
+    <!-- Define links -->
+    <xacro:cylindrical_link name="base_link" length="${link_length}" radius="${link_radius}" mass="${link_mass}" color="0.8 0.8 0.8"/>
+    <xacro:cylindrical_link name="link1" length="${link_length}" radius="${link_radius}" mass="${link_mass}" color="0.5 0.5 0.50"/>
+    <xacro:cylindrical_link name="link2" length="${link_length}" radius="${link_radius}" mass="${link_mass}" color="0.8 0.8 0.8"/>
+    <xacro:cylindrical_link name="link3" length="${link_length}" radius="${link_radius}" mass="${link_mass}" color="0.5 0.5 0.5"/>
+    <xacro:cylindrical_link name="link4" length="${link_length}" radius="${link_radius}" mass="${link_mass}" color="0.8 0.8 0.8"/>
+    <xacro:cylindrical_link name="link5" length="${link_length}" radius="${link_radius}" mass="${link_mass}" color="0.5 0.5 0.5"/>
+    <xacro:cylindrical_link name="end_effector" length="${link_length/2}" radius="${link_radius}" mass="${link_mass}" color="0 0 0.5"/>
+    
+    <link name="link_tcp">
+        <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <geometry>
+                    <sphere radius="0.04"/>
+                </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <geometry>
+                    <sphere radius="0.04"/>
+                </geometry>
+        </collision>
+    </link>
+
+    <!-- Define joints -->
+    <xacro:revolute_joint name="joint1" parent="base_link" child="link1" axis="0 0 1" xyz="0 0 ${link_length}" rpy="0 0 0" lower="${-PI}" upper="${PI}" effort="10" velocity="1.0"/>
+    <xacro:revolute_joint name="joint2" parent="link1" child="link2" axis="0 1 0" xyz="0 0 ${link_length}" rpy="0 0 0" lower="${-PI}" upper="${PI}" effort="10" velocity="1.0"/>
+    <xacro:revolute_joint name="joint3" parent="link2" child="link3" axis="0 0 1" xyz="0 0 ${link_length}" rpy="0 0 0" lower="${-PI}" upper="${PI}" effort="10" velocity="1.0"/>
+    <xacro:revolute_joint name="joint4" parent="link3" child="link4" axis="0 1 0" xyz="0 0 ${link_length}" rpy="0 0 0" lower="${-PI}" upper="${PI}" effort="10" velocity="1.0"/>
+    <xacro:revolute_joint name="joint5" parent="link4" child="link5" axis="0 0 1" xyz="0 0 ${link_length}" rpy="0 0 0" lower="${-PI}" upper="${PI}" effort="10" velocity="1.0"/>
+    <!-- <xacro:revolute_joint name="joint6" parent="link5" child="end_effector" axis="0 1 0" xyz="0 0 ${link_length/2}" rpy="0 0 0" lower="${-PI}" upper="${PI}" effort="10" velocity="1.0"/> -->
+    <xacro:revolute_joint name="joint6" parent="link5" child="end_effector" axis="0 1 0" xyz="0 0 ${link_length}" rpy="0 0 0" lower="${-PI}" upper="${PI}" effort="10" velocity="1.0"/>
+
+    <joint name="tcp_joint" type="fixed">
+        <origin xyz="0.0 0.0 ${link_length/2}" rpy="0.0 0.0 0.0"/>
+        <parent link="end_effector"/>
+        <child link="link_tcp"/>
+    </joint>
+</robot>

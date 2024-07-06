@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="simple_robot">
+
+    <xacro:property name="PI" value="3.1415927"/>
+    <xacro:include filename="$(find simple_robot_description)/urdf/simple_robot_description.xacro"/>
+</robot>
